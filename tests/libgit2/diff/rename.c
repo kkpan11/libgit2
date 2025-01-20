@@ -424,7 +424,7 @@ void test_diff_rename__test_small_files(void)
 	cl_git_pass(git_index_write_tree(&oid, index));
 	cl_git_pass(git_tree_lookup(&commit_tree, g_repo, &oid));
 	cl_git_pass(git_signature_new(&signature, "Rename", "rename@example.com", 1404157834, 0));
-	cl_git_pass(git_commit_create(&oid, g_repo, "HEAD", signature, signature, NULL, "Test commit", commit_tree, 1, &head_commit));
+	cl_git_pass(git_commit_create(&oid, g_repo, "HEAD", signature, signature, NULL, "Test commit", commit_tree, 1, (const git_commit**)&head_commit));
 
 	cl_git_mkfile("renames/copy.txt", "Hello World!\n");
 	cl_git_rmfile("renames/small.txt");
@@ -574,7 +574,7 @@ void test_diff_rename__working_directory_changes(void)
 
 	/* again with exact match blob */
 
-	cl_git_pass(git_oid__fromstr(&id, blobsha, GIT_OID_SHA1));
+	cl_git_pass(git_oid_from_string(&id, blobsha, GIT_OID_SHA1));
 	cl_git_pass(git_blob_lookup(&blob, g_repo, &id));
 	cl_git_pass(git_str_set(
 		&content, git_blob_rawcontent(blob), (size_t)git_blob_rawsize(blob)));
