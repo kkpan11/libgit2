@@ -26,21 +26,21 @@ void test_commit_commit__create_unexisting_update_ref(void)
 	git_signature *s;
 	git_reference *ref;
 
-	git_oid__fromstr(&oid, "a65fedf39aefe402d3bb6e24df4d4f5fe4547750", GIT_OID_SHA1);
+	git_oid_from_string(&oid, "a65fedf39aefe402d3bb6e24df4d4f5fe4547750", GIT_OID_SHA1);
 	cl_git_pass(git_commit_lookup(&commit, _repo, &oid));
 
-	git_oid__fromstr(&oid, "944c0f6e4dfa41595e6eb3ceecdb14f50fe18162", GIT_OID_SHA1);
+	git_oid_from_string(&oid, "944c0f6e4dfa41595e6eb3ceecdb14f50fe18162", GIT_OID_SHA1);
 	cl_git_pass(git_tree_lookup(&tree, _repo, &oid));
 
 	cl_git_pass(git_signature_now(&s, "alice", "alice@example.com"));
 
 	cl_git_fail(git_reference_lookup(&ref, _repo, "refs/heads/foo/bar"));
 	cl_git_pass(git_commit_create(&oid, _repo, "refs/heads/foo/bar", s, s,
-				      NULL, "some msg", tree, 1, &commit));
+				      NULL, "some msg", tree, 1, (const git_commit **) &commit));
 
 	/* fail because the parent isn't the tip of the branch anymore */
 	cl_git_fail(git_commit_create(&oid, _repo, "refs/heads/foo/bar", s, s,
-				      NULL, "some msg", tree, 1, &commit));
+				      NULL, "some msg", tree, 1, (const git_commit **) &commit));
 
 	cl_git_pass(git_reference_lookup(&ref, _repo, "refs/heads/foo/bar"));
 	cl_assert_equal_oid(&oid, git_reference_target(ref));
@@ -59,10 +59,10 @@ void test_commit_commit__create_initial_commit(void)
 	git_signature *s;
 	git_reference *ref;
 
-	git_oid__fromstr(&oid, "a65fedf39aefe402d3bb6e24df4d4f5fe4547750", GIT_OID_SHA1);
+	git_oid_from_string(&oid, "a65fedf39aefe402d3bb6e24df4d4f5fe4547750", GIT_OID_SHA1);
 	cl_git_pass(git_commit_lookup(&commit, _repo, &oid));
 
-	git_oid__fromstr(&oid, "944c0f6e4dfa41595e6eb3ceecdb14f50fe18162", GIT_OID_SHA1);
+	git_oid_from_string(&oid, "944c0f6e4dfa41595e6eb3ceecdb14f50fe18162", GIT_OID_SHA1);
 	cl_git_pass(git_tree_lookup(&tree, _repo, &oid));
 
 	cl_git_pass(git_signature_now(&s, "alice", "alice@example.com"));
@@ -89,10 +89,10 @@ void test_commit_commit__create_initial_commit_parent_not_current(void)
 	git_commit *commit;
 	git_signature *s;
 
-	git_oid__fromstr(&oid, "a65fedf39aefe402d3bb6e24df4d4f5fe4547750", GIT_OID_SHA1);
+	git_oid_from_string(&oid, "a65fedf39aefe402d3bb6e24df4d4f5fe4547750", GIT_OID_SHA1);
 	cl_git_pass(git_commit_lookup(&commit, _repo, &oid));
 
-	git_oid__fromstr(&oid, "944c0f6e4dfa41595e6eb3ceecdb14f50fe18162", GIT_OID_SHA1);
+	git_oid_from_string(&oid, "944c0f6e4dfa41595e6eb3ceecdb14f50fe18162", GIT_OID_SHA1);
 	cl_git_pass(git_tree_lookup(&tree, _repo, &oid));
 
 	cl_git_pass(git_signature_now(&s, "alice", "alice@example.com"));

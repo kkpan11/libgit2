@@ -26,7 +26,6 @@
 #include <git2/branch.h>
 #include <git2/sys/refdb_backend.h>
 #include <git2/sys/refs.h>
-#include <git2/sys/reflog.h>
 
 #define DEFAULT_NESTING_LEVEL	5
 #define MAX_NESTING_LEVEL		10
@@ -161,7 +160,7 @@ static int packed_reload(refdb_fs_backend *backend)
 
 		/* parse "<OID> <refname>\n" */
 
-		if (git_oid__fromstr(&oid, scan, backend->oid_type) < 0)
+		if (git_oid_from_prefix(&oid, scan, oid_hexsize, backend->oid_type) < 0)
 			goto parse_failed;
 		scan += oid_hexsize;
 
@@ -182,7 +181,7 @@ static int packed_reload(refdb_fs_backend *backend)
 		/* look for optional "^<OID>\n" */
 
 		if (*scan == '^') {
-			if (git_oid__fromstr(&oid, scan + 1, backend->oid_type) < 0)
+			if (git_oid_from_prefix(&oid, scan + 1, oid_hexsize, backend->oid_type) < 0)
 				goto parse_failed;
 			scan += oid_hexsize + 1;
 
@@ -229,7 +228,7 @@ static int loose_parse_oid(
 		goto corrupted;
 
 	/* we need to get 40 OID characters from the file */
-	if (git_oid__fromstr(oid, str, oid_type) < 0)
+	if (git_oid_from_prefix(oid, str, oid_hexsize, oid_type) < 0)
 		goto corrupted;
 
 	/* If the file is longer than 40 chars, the 41st must be a space */
@@ -724,7 +723,7 @@ static int packed_lookup(
 			git_oid oid, peel, *peel_ptr = NULL;
 
 			if (data_end - rec < (long)oid_hexsize ||
-			    git_oid__fromstr(&oid, rec, backend->oid_type) < 0) {
+			    git_oid_from_prefix(&oid, rec, oid_hexsize, backend->oid_type) < 0) {
 				goto parse_failed;
 			}
 			rec += oid_hexsize + 1;
@@ -740,7 +739,7 @@ static int packed_lookup(
 				if (*rec == '^') {
 					rec++;
 					if (data_end - rec < (long)oid_hexsize ||
-					    git_oid__fromstr(&peel, rec, backend->oid_type) < 0) {
+					    git_oid_from_prefix(&peel, rec, oid_hexsize, backend->oid_type) < 0) {
 						goto parse_failed;
 					}
 					peel_ptr = &peel;
@@ -801,7 +800,7 @@ static void refdb_fs_backend__iterator_free(git_reference_iterator *_iter)
 {
 	refdb_fs_iter *iter = GIT_CONTAINER_OF(_iter, refdb_fs_iter, parent);
 
-	git_vector_free(&iter->loose);
+	git_vector_dispose(&iter->loose);
 	git_pool_clear(&iter->pool);
 	git_sortedcache_free(iter->cache);
 	git__free(iter);

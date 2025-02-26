@@ -696,7 +696,7 @@ static int tree_iterator_frame_pop(tree_iterator *iter)
 
 	frame = git_array_pop(iter->frames);
 
-	git_vector_free(&frame->entries);
+	git_vector_dispose(&frame->entries);
 	git_tree_free(frame->tree);
 
 	do {
@@ -709,7 +709,7 @@ static int tree_iterator_frame_pop(tree_iterator *iter)
 	git_vector_foreach(&frame->similar_trees, i, tree)
 		git_tree_free(tree);
 
-	git_vector_free(&frame->similar_trees);
+	git_vector_dispose(&frame->similar_trees);
 
 	git_str_dispose(&frame->path);
 
@@ -1501,7 +1501,7 @@ GIT_INLINE(int) filesystem_iterator_frame_pop(filesystem_iterator *iter)
 	filesystem_iterator_frame_pop_ignores(iter);
 
 	git_pool_clear(&frame->entry_pool);
-	git_vector_free(&frame->entries);
+	git_vector_dispose(&frame->entries);
 
 	return 0;
 }
@@ -1520,7 +1520,7 @@ static void filesystem_iterator_set_current(
 	iter->entry.ctime.seconds = (int32_t)entry->st.st_ctime;
 	iter->entry.mtime.seconds = (int32_t)entry->st.st_mtime;
 
-#if defined(GIT_USE_NSEC)
+#if defined(GIT_NSEC)
 	iter->entry.ctime.nanoseconds = entry->st.st_ctime_nsec;
 	iter->entry.mtime.nanoseconds = entry->st.st_mtime_nsec;
 #else
@@ -2336,7 +2336,7 @@ void git_iterator_free(git_iterator *iter)
 
 	iter->cb->free(iter);
 
-	git_vector_free(&iter->pathlist);
+	git_vector_dispose(&iter->pathlist);
 	git__free(iter->start);
 	git__free(iter->end);
 

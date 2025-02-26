@@ -197,7 +197,7 @@ GIT_INLINE(int) rebase_readoid(
 		return error;
 
 	if (str_out->size != git_oid_hexsize(rebase->repo->oid_type) ||
-	    git_oid__fromstr(out, str_out->ptr, rebase->repo->oid_type) < 0) {
+	    git_oid_from_string(out, str_out->ptr, rebase->repo->oid_type) < 0) {
 		git_error_set(GIT_ERROR_REBASE, "the file '%s' contains an invalid object ID", filename);
 		return -1;
 	}
@@ -952,7 +952,7 @@ static int create_signed(
 	const char *message,
 	git_tree *tree,
 	size_t parent_count,
-	git_commit * const *parents)
+	const git_commit **parents)
 {
 	git_str commit_content = GIT_STR_INIT;
 	git_buf commit_signature = { NULL, 0, 0 },
@@ -1040,7 +1040,8 @@ static int rebase_commit__create(
 	if (rebase->options.commit_create_cb) {
 		error = rebase->options.commit_create_cb(&commit_id,
 			author, committer, message_encoding, message,
-			tree, 1, &parent_commit, rebase->options.payload);
+			tree, 1, (const git_commit **)&parent_commit,
+			rebase->options.payload);
 
 		git_error_set_after_callback_function(error,
 			"commit_create_cb");
@@ -1049,14 +1050,14 @@ static int rebase_commit__create(
 	else if (rebase->options.signing_cb) {
 		error = create_signed(&commit_id, rebase, author,
 			committer, message_encoding, message, tree,
-			1, &parent_commit);
+			1, (const git_commit **)&parent_commit);
 	}
 #endif
 
 	if (error == GIT_PASSTHROUGH)
 		error = git_commit_create(&commit_id, rebase->repo, NULL,
 			author, committer, message_encoding, message,
-			tree, 1, &parent_commit);
+			tree, 1, (const git_commit **)&parent_commit);
 
 	if (error)
 		goto done;
@@ -1332,8 +1333,8 @@ static int rebase_copy_notes(
 
 		if (strlen(fromstr) != git_oid_hexsize(rebase->repo->oid_type) ||
 		    strlen(tostr) != git_oid_hexsize(rebase->repo->oid_type) ||
-		    git_oid__fromstr(&from, fromstr, rebase->repo->oid_type) < 0 ||
-		    git_oid__fromstr(&to, tostr, rebase->repo->oid_type) < 0)
+		    git_oid_from_string(&from, fromstr, rebase->repo->oid_type) < 0 ||
+		    git_oid_from_string(&to, tostr, rebase->repo->oid_type) < 0)
 			goto on_error;
 
 		if ((error = rebase_copy_note(rebase, notes_ref.ptr, &from, &to, committer)) < 0)
