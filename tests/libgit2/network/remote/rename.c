@@ -170,7 +170,7 @@ void test_network_remote_rename__overwrite_ref_in_target(void)
 	git_branch_iterator *iter;
 	git_strarray problems = {0};
 
-	cl_git_pass(git_oid__fromstr(&id, "a65fedf39aefe402d3bb6e24df4d4f5fe4547750", GIT_OID_SHA1));
+	cl_git_pass(git_oid_from_string(&id, "a65fedf39aefe402d3bb6e24df4d4f5fe4547750", GIT_OID_SHA1));
 	cl_git_pass(git_reference_create(&ref, _repo, "refs/remotes/renamed/master", &id, 1, NULL));
 	git_reference_free(ref);
 
@@ -238,7 +238,7 @@ void test_network_remote_rename__symref_head(void)
 	cl_assert_equal_s("be3563ae3f795b2b4353bcce3a527ad0a4f7f644", idstr);
 	git_reference_free(ref);
 
-	git_vector_free(&refs);
+	git_vector_dispose(&refs);
 
 	cl_git_fail_with(GIT_ITEROVER, git_branch_next(&ref, &btype, iter));
 	git_branch_iterator_free(iter);

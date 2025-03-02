@@ -39,9 +39,13 @@ void test_online_fetch__cleanup(void)
 	git__free(_remote_redirect_subsequent);
 }
 
-static int update_tips(const char *refname, const git_oid *a, const git_oid *b, void *data)
+static int update_refs(const char *refname, const git_oid *a, const git_oid *b, git_refspec *spec, void *data)
 {
-	GIT_UNUSED(refname); GIT_UNUSED(a); GIT_UNUSED(b); GIT_UNUSED(data);
+	GIT_UNUSED(refname);
+	GIT_UNUSED(a);
+	GIT_UNUSED(b);
+	GIT_UNUSED(spec);
+	GIT_UNUSED(data);
 
 	++counter;
 
@@ -62,7 +66,7 @@ static void do_fetch(const char *url, git_remote_autotag_option_t flag, int n)
 	size_t bytes_received = 0;
 
 	options.callbacks.transfer_progress = progress;
-	options.callbacks.update_tips = update_tips;
+	options.callbacks.update_refs = update_refs;
 	options.callbacks.payload = &bytes_received;
 	options.download_tags = flag;
 	counter = 0;
@@ -163,7 +167,7 @@ void test_online_fetch__doesnt_retrieve_a_pack_when_the_repository_is_up_to_date
 
 	options.callbacks.transfer_progress = &transferProgressCallback;
 	options.callbacks.payload = &invoked;
-	options.callbacks.update_tips = update_tips;
+	options.callbacks.update_refs = update_refs;
 	cl_git_pass(git_remote_download(remote, NULL, &options));
 
 	cl_assert_equal_i(false, invoked);
@@ -201,7 +205,7 @@ void test_online_fetch__report_unchanged_tips(void)
 
 	options.callbacks.transfer_progress = &transferProgressCallback;
 	options.callbacks.payload = &invoked;
-	options.callbacks.update_tips = update_tips;
+	options.callbacks.update_refs = update_refs;
 	cl_git_pass(git_remote_download(remote, NULL, &options));
 
 	cl_assert_equal_i(false, invoked);
@@ -367,7 +371,7 @@ void test_online_fetch__reachable_commit(void)
 	refspecs.strings = &refspec;
 	refspecs.count = 1;
 
-	git_oid__fromstr(&expected_id, "2c349335b7f797072cf729c4f3bb0914ecb6dec9", GIT_OID_SHA1);
+	git_oid_from_string(&expected_id, "2c349335b7f797072cf729c4f3bb0914ecb6dec9", GIT_OID_SHA1);
 
 	cl_git_pass(git_remote_create(&remote, _repo, "test",
 		"https://github.com/libgit2/TestGitRepository"));
@@ -397,7 +401,7 @@ void test_online_fetch__reachable_commit_without_destination(void)
 	refspecs.strings = &refspec;
 	refspecs.count = 1;
 
-	git_oid__fromstr(&expected_id, "2c349335b7f797072cf729c4f3bb0914ecb6dec9", GIT_OID_SHA1);
+	git_oid_from_string(&expected_id, "2c349335b7f797072cf729c4f3bb0914ecb6dec9", GIT_OID_SHA1);
 
 	cl_git_pass(git_remote_create(&remote, _repo, "test",
 		"https://github.com/libgit2/TestGitRepository"));

@@ -26,7 +26,7 @@ static int create_cb_passthrough(
 	const char *message,
 	const git_tree *tree,
 	size_t parent_count,
-	git_commit * const parents[],
+	const git_commit *parents[],
 	void *payload)
 {
 	GIT_UNUSED(out);
@@ -70,7 +70,7 @@ committer Rebaser <rebaser@rebaser.rb> 1405694510 +0000\n";
 	cl_git_pass(git_rebase_next(&rebase_operation, rebase));
 	cl_git_pass(git_rebase_commit(&commit_id, rebase, NULL, signature, NULL, NULL));
 
-	git_oid__fromstr(&expected_id, "129183968a65abd6c52da35bff43325001bfc630", GIT_OID_SHA1);
+	git_oid_from_string(&expected_id, "129183968a65abd6c52da35bff43325001bfc630", GIT_OID_SHA1);
 	cl_assert_equal_oid(&expected_id, &commit_id);
 
 	cl_git_pass(git_commit_lookup(&commit, repo, &commit_id));
@@ -94,7 +94,7 @@ static int create_cb_signed_gpg(
 	const char *message,
 	const git_tree *tree,
 	size_t parent_count,
-	git_commit * const parents[],
+	const git_commit *parents[],
 	void *payload)
 {
 	git_buf commit_content = GIT_BUF_INIT;
@@ -178,7 +178,7 @@ gpgsig -----BEGIN PGP SIGNATURE-----\n\
 	cl_git_pass(git_rebase_next(&rebase_operation, rebase));
 	cl_git_pass(git_rebase_commit(&commit_id, rebase, NULL, signature, NULL, NULL));
 
-	git_oid__fromstr(&expected_id, "bf78348e45c8286f52b760f1db15cb6da030f2ef", GIT_OID_SHA1);
+	git_oid_from_string(&expected_id, "bf78348e45c8286f52b760f1db15cb6da030f2ef", GIT_OID_SHA1);
 	cl_assert_equal_oid(&expected_id, &commit_id);
 
 	cl_git_pass(git_commit_lookup(&commit, repo, &commit_id));
@@ -202,7 +202,7 @@ static int create_cb_error(
 	const char *message,
 	const git_tree *tree,
 	size_t parent_count,
-	git_commit * const parents[],
+	const git_commit *parents[],
 	void *payload)
 {
 	GIT_UNUSED(out);
@@ -300,7 +300,7 @@ committer Rebaser <rebaser@rebaser.rb> 1405694510 +0000\n";
 	cl_git_pass(git_rebase_next(&rebase_operation, rebase));
 	cl_git_pass(git_rebase_commit(&commit_id, rebase, NULL, signature, NULL, NULL));
 
-	git_oid__fromstr(&expected_id, "129183968a65abd6c52da35bff43325001bfc630", GIT_OID_SHA1);
+	git_oid_from_string(&expected_id, "129183968a65abd6c52da35bff43325001bfc630", GIT_OID_SHA1);
 	cl_assert_equal_oid(&expected_id, &commit_id);
 
 	cl_git_pass(git_commit_lookup(&commit, repo, &commit_id));
@@ -398,7 +398,7 @@ gpgsig -----BEGIN PGP SIGNATURE-----\n\
 	cl_git_pass(git_rebase_next(&rebase_operation, rebase));
 	cl_git_pass(git_rebase_commit(&commit_id, rebase, NULL, signature, NULL, NULL));
 
-	git_oid__fromstr(&expected_id, "bf78348e45c8286f52b760f1db15cb6da030f2ef", GIT_OID_SHA1);
+	git_oid_from_string(&expected_id, "bf78348e45c8286f52b760f1db15cb6da030f2ef", GIT_OID_SHA1);
 	cl_assert_equal_oid(&expected_id, &commit_id);
 
 	cl_git_pass(git_commit_lookup(&commit, repo, &commit_id));
@@ -473,7 +473,7 @@ magicsig magic word: pretty please\n";
 	cl_git_pass(git_rebase_next(&rebase_operation, rebase));
 	cl_git_pass(git_rebase_commit(&commit_id, rebase, NULL, signature, NULL, NULL));
 
-	git_oid__fromstr(&expected_id, "f46a4a8d26ae411b02aa61b7d69576627f4a1e1c", GIT_OID_SHA1);
+	git_oid_from_string(&expected_id, "f46a4a8d26ae411b02aa61b7d69576627f4a1e1c", GIT_OID_SHA1);
 	cl_assert_equal_oid(&expected_id, &commit_id);
 
 	cl_git_pass(git_commit_lookup(&commit, repo, &commit_id));
