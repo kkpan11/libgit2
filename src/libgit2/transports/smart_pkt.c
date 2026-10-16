@@ -236,15 +236,16 @@ static int set_data(
 	    len > (size_t)((caps - line) + 1)) {
 		caps++;
 
-		if (strncmp(caps, "object-format=", CONST_STRLEN("object-format=")) == 0)
+		if (len - (caps - line) >= CONST_STRLEN("object-format=") &&
+		    strncmp(caps, "object-format=", CONST_STRLEN("object-format=")) == 0)
 			format_str = caps + CONST_STRLEN("object-format=");
-		else if ((format_str = strstr(caps, " object-format=")) != NULL)
+		else if ((format_str = git__memmem(caps, len - (caps - line), " object-format=", CONST_STRLEN(" object-format="))) != NULL)
 			format_str += CONST_STRLEN(" object-format=");
 	}
 
 	if (format_str) {
-		if ((eos = strchr(format_str, ' ')) == NULL)
-			eos = strchr(format_str, '\0');
+		if ((eos = memchr(format_str, ' ', len - (format_str - line))) == NULL)
+			eos = memchr(format_str, '\0', len - (format_str - line));
 
 		GIT_ASSERT(eos);
 
@@ -283,13 +284,13 @@ static int ref_pkt(
 	git_pkt_ref *pkt;
 	size_t alloclen, oid_hexsize;
 
-	pkt = git__calloc(1, sizeof(git_pkt_ref));
-	GIT_ERROR_CHECK_ALLOC(pkt);
-	pkt->type = GIT_PKT_REF;
-
 	/* Determine OID type from capabilities */
 	if (!data->seen_capabilities && set_data(data, line, len) < 0)
 		return -1;
+
+	pkt = git__calloc(1, sizeof(git_pkt_ref));
+	GIT_ERROR_CHECK_ALLOC(pkt);
+	pkt->type = GIT_PKT_REF;
 
 	GIT_ASSERT(data->oid_type);
 	oid_hexsize = git_oid_hexsize(data->oid_type);
@@ -769,11 +770,7 @@ int git_pkt_buffer_wants(
 	git_oid_t oid_type;
 	size_t oid_hexsize, want_len, i = 0;
 
-#ifdef GIT_EXPERIMENTAL_SHA256
 	oid_type = wants->refs_len > 0 ? wants->refs[0]->oid.type : GIT_OID_SHA1;
-#else
-	oid_type = GIT_OID_SHA1;
-#endif
 
 	oid_hexsize = git_oid_hexsize(oid_type);
 
@@ -848,11 +845,7 @@ int git_pkt_buffer_have(git_oid *oid, git_str *buf)
 	git_oid_t oid_type;
 	size_t oid_hexsize, have_len;
 
-#ifdef GIT_EXPERIMENTAL_SHA256
 	oid_type = oid->type;
-#else
-	oid_type = GIT_OID_SHA1;
-#endif
 
 	oid_hexsize = git_oid_hexsize(oid_type);
 	have_len = PKT_LEN_SIZE + CONST_STRLEN(PKT_HAVE_PREFIX) +

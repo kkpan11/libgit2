@@ -406,23 +406,85 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ----------------------------------------------------------------------
 
-The bundled PCRE implementation (deps/pcre/) is licensed under the BSD
-license.
+The bundled PCRE implementation (deps/pcre2/) is licensed under the
+PCRE2 Licence.
+
+PCRE2 is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
+
+Releases 10.00 and above of PCRE2 are distributed under the terms of the "BSD"
+licence, as specified below, with one exemption for certain binary
+redistributions. The documentation for PCRE2, supplied in the "doc" directory,
+is distributed under the same terms as the software itself. The data in the
+testdata directory is not copyrighted and is in the public domain.
+
+The basic library functions are written in C and are freestanding. Also
+included in the distribution is a just-in-time compiler that can be used to
+optimize pattern matching. This is an optional feature that can be omitted when
+the library is built. The just-in-time compiler is separately licensed under the
+"2-clause BSD" licence.
+
+
+COPYRIGHT
+---------
+
+### The basic library functions
+
+    Written by:       Philip Hazel
+    Email local part: Philip.Hazel
+    Email domain:     gmail.com
+
+    Retired from University of Cambridge Computing Service,
+    Cambridge, England.
+
+    Copyright (c) 1997-2007 University of Cambridge
+    Copyright (c) 2007-2024 Philip Hazel
+    All rights reserved.
+
+### PCRE2 Just-In-Time compilation support
+
+    Written by:       Zoltan Herczeg
+    Email local part: hzmester
+    Email domain:     freemail.hu
+
+    Copyright (c) 2010-2024 Zoltan Herczeg
+    All rights reserved.
+
+### Stack-less Just-In-Time compiler
+
+    Written by:       Zoltan Herczeg
+    Email local part: hzmester
+    Email domain:     freemail.hu
+
+    Copyright (c) 2009-2024 Zoltan Herczeg
+    All rights reserved.
+
+The code in the `deps/sljit` directory has its own LICENSE file.
+
+### All other contributions
+
+Many other contributors have participated in the authorship of PCRE2. As PCRE2
+has never required a Contributor Licensing Agreement, or other copyright
+assignment agreement, all contributions have copyright retained by each
+original contributor or their employer.
+
+
+THE "BSD" LICENCE
+-----------------
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
+* Redistributions of source code must retain the above copyright notices,
+  this list of conditions and the following disclaimer.
 
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
+* Redistributions in binary form must reproduce the above copyright
+  notices, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
 
-    * Neither the name of the University of Cambridge nor the name of Google
-      Inc. nor the names of their contributors may be used to endorse or
-      promote products derived from this software without specific prior
-      written permission.
+* Neither the name of the University of Cambridge nor the names of any
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -435,6 +497,16 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
+
+
+EXEMPTION FOR BINARY LIBRARY-LIKE PACKAGES
+------------------------------------------
+
+The second condition in the BSD licence (covering binary redistributions) does
+not apply all the way down a chain of software. If binary package A includes
+PCRE2, it must respect the condition, but if package B is software that
+includes package A, the condition is not imposed on package B unless it uses
+PCRE2 independently.
 
 ----------------------------------------------------------------------
 
@@ -999,138 +1071,19 @@ SOFTWARE.
 
 ----------------------------------------------------------------------
 
-The bundled wildmatch code is licensed under the BSD license:
-
-Copyright Rich Salz.
-All rights reserved.
-
-Redistribution and use in any form are permitted provided that the
-following restrictions are are met:
-
-1.  Source distributions must retain this entire copyright notice
-    and comment.
-2.  Binary distributions must include the acknowledgement ``This
-    product includes software developed by Rich Salz'' in the
-    documentation or other materials provided with the
-    distribution.  This must not be represented as an endorsement
-   or promotion without specific prior written permission.
-3.  The origin of this software must not be misrepresented, either
-    by explicit claim or by omission.  Credits must appear in the
-    source and documentation.
-4.  Altered versions must be plainly marked as such in the source
-    and documentation and must not be misrepresented as being the
-    original software.
-
-THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
-WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+The bundled wildmatch code was originally written by Rich $alz and is
+available in the public domain.
 
 ----------------------------------------------------------------------
 
 Portions of the OpenSSL headers are included under the OpenSSL license:
 
-Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
-All rights reserved.
+Copyright 1995-2021 The OpenSSL Project Authors. All Rights Reserved.
 
-This package is an SSL implementation written
-by Eric Young (eay@cryptsoft.com).
-The implementation was written so as to conform with Netscapes SSL.
-
-This library is free for commercial and non-commercial use as long as
-the following conditions are aheared to.  The following conditions
-apply to all code found in this distribution, be it the RC4, RSA,
-lhash, DES, etc., code; not just the SSL code.  The SSL documentation
-included with this distribution is covered by the same copyright terms
-except that the holder is Tim Hudson (tjh@cryptsoft.com).
-
-Copyright remains Eric Young's, and as such any Copyright notices in
-the code are not to be removed.
-If this package is used in a product, Eric Young should be given attribution
-as the author of the parts of the library used.
-This can be in the form of a textual message at program startup or
-in documentation (online or textual) provided with the package.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-1. Redistributions of source code must retain the copyright
-   notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. All advertising materials mentioning features or use of this software
-   must display the following acknowledgement:
-   "This product includes cryptographic software written by
-    Eric Young (eay@cryptsoft.com)"
-   The word 'cryptographic' can be left out if the rouines from the library
-   being used are not cryptographic related :-).
-4. If you include any Windows specific code (or a derivative thereof) from
-   the apps directory (application code) you must include an acknowledgement:
-   "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
-
-THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGE.
-
-The licence and distribution terms for any publically available version or
-derivative of this code cannot be changed.  i.e. this code cannot simply be
-copied and put under another distribution licence
-[including the GNU Public Licence.]
-
-====================================================================
-Copyright (c) 1998-2007 The OpenSSL Project.  All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-
-1. Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in
-   the documentation and/or other materials provided with the
-   distribution.
-
-3. All advertising materials mentioning features or use of this
-   software must display the following acknowledgment:
-   "This product includes software developed by the OpenSSL Project
-   for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
-
-4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used to
-   endorse or promote products derived from this software without
-   prior written permission. For written permission, please contact
-   openssl-core@openssl.org.
-
-5. Products derived from this software may not be called "OpenSSL"
-   nor may "OpenSSL" appear in their names without prior written
-   permission of the OpenSSL Project.
-
-6. Redistributions of any form whatsoever must retain the following
-   acknowledgment:
-   "This product includes software developed by the OpenSSL Project
-   for use in the OpenSSL Toolkit (http://www.openssl.org/)"
-
-THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
-EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
-ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-OF THE POSSIBILITY OF SUCH DAMAGE.
+Licensed under the Apache License 2.0 (the "License").  You may not use
+this file except in compliance with the License.  You can obtain a copy
+in the file LICENSE in the source distribution or at
+https://www.openssl.org/source/license.html
 
 ----------------------------------------------------------------------
 

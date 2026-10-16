@@ -19,7 +19,7 @@ void test_repo_extensions__initialize(void)
 void test_repo_extensions__cleanup(void)
 {
 	cl_git_sandbox_cleanup();
-	cl_git_pass(git_libgit2_opts(GIT_OPT_SET_EXTENSIONS, NULL, 0));
+	cl_git_pass(git_libgit2_opts(GIT_OPT_SET_EXTENSIONS, NULL, (size_t)0));
 }
 
 void test_repo_extensions__builtin(void)
@@ -76,6 +76,16 @@ void test_repo_extensions__preciousobjects(void)
 	git_repository *extended = NULL;
 
 	cl_repo_set_string(repo, "extensions.preciousObjects", "true");
+
+	cl_git_pass(git_repository_open(&extended, "empty_bare.git"));
+	git_repository_free(extended);
+}
+
+void test_repo_extensions__relativeworktrees(void)
+{
+	git_repository *extended = NULL;
+
+	cl_repo_set_string(repo, "extensions.relativeWorktrees", "true");
 
 	cl_git_pass(git_repository_open(&extended, "empty_bare.git"));
 	git_repository_free(extended);

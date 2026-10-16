@@ -65,7 +65,7 @@ jobs:
             CMAKE_OPTIONS: -DUSE_HTTPS=mbedTLS -DUSE_SHA1=HTTPS -DDEPRECATE_HARD=ON -DDEBUG_LEAK_CHECKER=valgrind -DUSE_GSSAPI=ON -DUSE_SSH=libssh2
         - name: "macOS"
           id: macos
-          os: macos-13
+          os: macos-14
           setup-script: osx
           env:
             CC: clang
@@ -76,7 +76,7 @@ jobs:
             SKIP_NEGOTIATE_TESTS: true
         - name: "iOS"
           id: ios
-          os: macos-13
+          os: macos-14
           setup-script: ios
           env:
             CC: clang
@@ -282,7 +282,6 @@ jobs:
             RUN_INVASIVE_TESTS: true
             SKIP_PROXY_TESTS: true
             SKIP_PUSHOPTIONS_TESTS: true
-            GITTEST_FLAKY_STAT: true
           os: ubuntu-latest
         - name: "Linux (arm64, Bionic, GCC, OpenSSL)"
           id: bionic-arm64-gcc-openssl
@@ -344,46 +343,43 @@ jobs:
             CMAKE_OPTIONS: -DUSE_HTTPS=OpenSSL-Dynamic -DDEPRECATE_HARD=ON -DDEBUG_LEAK_CHECKER=valgrind -DUSE_GSSAPI=ON -DUSE_SSH=ON
             CMAKE_GENERATOR: Ninja
 
-        # All builds: experimental SHA256 support
-        - name: "Linux (SHA256, Xenial, Clang, OpenSSL)"
-          id: linux-sha256
-          container:
-            name: xenial
-          env:
-            CC: clang
-            CMAKE_GENERATOR: Ninja
-            CMAKE_OPTIONS: -DUSE_HTTPS=OpenSSL -DDEPRECATE_HARD=ON -DDEBUG_LEAK_CHECKER=valgrind -DUSE_GSSAPI=ON -DUSE_SSH=ON
+        # All builds: reftable
+        - name: "Linux (Noble, GCC, OpenSSL, libssh2, reftable)"
+          id: noble-gcc-openssl-reftable
           os: ubuntu-latest
-        - name: "macOS (SHA256)"
-          id: macos-sha256
-          os: macos-13
+          container:
+            name: noble
+          env:
+            CC: gcc
+            CLAR_REF_FORMAT: reftable
+            CMAKE_GENERATOR: Ninja
+            CMAKE_OPTIONS: -DUSE_HTTPS=OpenSSL -DREGEX_BACKEND=builtin -DDEPRECATE_HARD=ON -DDEBUG_LEAK_CHECKER=valgrind -DUSE_GSSAPI=ON -DUSE_SSH=libssh2 -DDEBUG_STRICT_ALLOC=ON -DDEBUG_STRICT_OPEN=ON
+        - name: "macOS (reftable)"
+          id: macos-reftable
+          os: macos-14
           setup-script: osx
           env:
             CC: clang
-            CMAKE_OPTIONS: -DREGEX_BACKEND=regcomp_l -DDEPRECATE_HARD=ON -DDEBUG_LEAK_CHECKER=leaks -DUSE_GSSAPI=ON -DEXPERIMENTAL_SHA256=ON
+            CLAR_REF_FORMAT: reftable
+            CMAKE_OPTIONS: -DREGEX_BACKEND=regcomp_l -DDEPRECATE_HARD=ON -DDEBUG_LEAK_CHECKER=leaks -DUSE_GSSAPI=ON
+            CMAKE_GENERATOR: Ninja
             PKG_CONFIG_PATH: /usr/local/opt/openssl/lib/pkgconfig
             SKIP_SSH_TESTS: true
             SKIP_NEGOTIATE_TESTS: true
-        - name: "Windows (SHA256, amd64, Visual Studio)"
-          id: windows-sha256
+        - name: "Windows (amd64, Visual Studio, Schannel, reftable)"
+          id: windows-amd64-vs-reftable
           os: windows-2022
+          setup-script: win32
           env:
             ARCH: amd64
+            CLAR_REF_FORMAT: reftable
             CMAKE_GENERATOR: Visual Studio 17 2022
-            CMAKE_OPTIONS: -A x64 -DDEBUG_LEAK_CHECKER=win32 -DDEPRECATE_HARD=ON -DEXPERIMENTAL_SHA256=ON
+            CMAKE_OPTIONS: -A x64 -DDEBUG_LEAK_CHECKER=win32 -DDEPRECATE_HARD=ON -DUSE_HTTPS=Schannel -DUSE_SSH=ON -DCMAKE_PREFIX_PATH=D:\Temp\libssh2
+            BUILD_PATH: C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Program Files (x86)\CMake\bin;D:\Temp\libssh2\bin
+            BUILD_TEMP: D:\Temp
             SKIP_SSH_TESTS: true
             SKIP_NEGOTIATE_TESTS: true
-            # TODO: this is a temporary removal
-            SKIP_GITDAEMON_TESTS: true
-        - name: "Linux (SHA256, Xenial, Clang, OpenSSL-FIPS)"
-          id: linux-sha256-fips
-          container:
-            name: xenial
-          env:
-            CC: clang
-            CMAKE_GENERATOR: Ninja
-            CMAKE_OPTIONS: -DUSE_HTTPS=OpenSSL -DDEPRECATE_HARD=ON -DDEBUG_LEAK_CHECKER=valgrind -DUSE_GSSAPI=ON -DUSE_SSH=ON -DUSE_SHA1=OpenSSL-FIPS -DUSE_SHA256=OpenSSL-FIPS
-          os: ubuntu-latest
+
       fail-fast: false
     env: ${{ matrix.platform.env }}
     runs-on: ${{ matrix.platform.os }}
@@ -419,6 +415,7 @@ jobs:
         container: ${{ matrix.platform.container.name }}
         container-version: ${{ env.docker-registry-container-sha }}
         shell: ${{ matrix.platform.shell }}
+        cmake-global-options: -DDEPRECATE_HARD=ON -DENABLE_WERROR=ON -DBUILD_EXAMPLES=ON -DBUILD_FUZZERS=ON -DUSE_STANDALONE_FUZZERS=ON
     - name: Test
       uses: ./source/.github/actions/run-build
       with:
@@ -446,31 +443,31 @@ jobs:
       with:
         paths: 'test-results-*/*.xml'
 
-  coverity:
+  sonarqube:
     # Only run scheduled workflows on the main repository; prevents people
     # from using build minutes on their forks.
     if: github.repository == 'libgit2/libgit2'
 
-    name: Coverity
+    name: SonarQube
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
       with:
-        path: source
         fetch-depth: 0
-    - name: Set up container
-      uses: ./source/.github/actions/download-or-build-container
+    - name: Run SonarQube
+      uses: SonarSource/sonarqube-scan-action@v8
       with:
-        registry: ${{ env.docker-registry }}
-        config-path: ${{ env.docker-config-path }}
-        container: xenial
-        github_token: ${{ secrets.github_token }}
-      if: matrix.platform.container.name != ''
-    - name: Run Coverity
-      run: source/ci/coverity.sh
+        args: >
+          -Dsonar.organization=libgit2_libgit2
+          -Dsonar.organization=libgit2
+          -Dsonar.projectKey=libgit2
+          -Dsonar.projectName=libgit2
+          -Dsonar.sources=src
+          -Dsonar.tests=tests
+          -Dsonar.test.exclusions="tests/resources/**/*"
       env:
-        COVERITY_TOKEN: ${{ secrets.coverity_token }}
+        SONAR_TOKEN: ${{ secrets.sonar_token }}
 
   codeql:
     # Only run scheduled workflows on the main repository; prevents people
